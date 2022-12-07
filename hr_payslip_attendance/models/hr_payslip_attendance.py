@@ -18,7 +18,7 @@ class HrPayslipAttendance(models.Model):
     overtime_ids = fields.One2many('airo.overtime.request', 'employee_id', compute='_onchange_period_attendance',
                                      readonly=True, string='Attendance')
 
-    leave_ids = fields.One2many('hr.work.entry', 'employee_id', compute='_onchange_period_attendance',
+    payroll_leave_ids = fields.One2many('hr.work.entry', 'employee_id', compute='_onchange_period_attendance',
                                    readonly=True, string='Leaves')
 
     @api.depends('date_from', 'date_to')
@@ -26,7 +26,7 @@ class HrPayslipAttendance(models.Model):
         for rec in self:
             rec.attendance_ids = self.env['hr.attendance'].search([('check_in', '>=', rec.date_from), ('check_out', '<=', rec.date_to), ('employee_id' , '=', rec.employee_id.id)])
             rec.overtime_ids = self.env['airo.overtime.request'].search([('date_from', '>=', rec.date_from), ('date_to', '<=', rec.date_to), ('employee_id' , '=', rec.employee_id.id), ('state', '=', 'approved')])
-            rec.leave_ids = self.env['hr.work.entry'].search(
+            rec.payroll_leave_ids = self.env['hr.work.entry'].search(
                 [('date_start', '>=', rec.date_from), ('date_stop', '<=', rec.date_to),
                  ('employee_id', '=', rec.employee_id.id),
                  '|',
