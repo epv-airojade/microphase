@@ -26,7 +26,7 @@ class airo_overtime_request(models.Model):
         [('draft', 'Draft'), ('to_approve', 'To Approve'), ('approved', 'Approved'), ('rejected', 'Rejected')], 'State', default='draft',
         readonly=True)
     overtime_reason = fields.Selection(
-        [('rush', 'Rush Tasks'), ('additional', 'Additional Tasks'), ('deadline', 'Adjusted Task Deadline'), ('management', 'Asked by Management'), ('others', 'Others')], 'Rush Tasks',
+        [('rush', 'Rush Tasks'), ('additional', 'Additional Tasks'), ('deadline', 'Adjusted Task Deadline'), ('management', 'Asked by Management'), ('others', 'Others')], 'Reason',
         default='rush',
         readonly=False, required=True)
 
