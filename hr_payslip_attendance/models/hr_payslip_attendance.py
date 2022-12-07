@@ -18,21 +18,21 @@ class HrPayslipAttendance(models.Model):
     overtime_ids = fields.One2many('airo.overtime.request', 'employee_id', compute='_onchange_period_attendance',
                                      readonly=True, string='Attendance')
 
-    payroll_leave_ids = fields.One2many('hr.work.entry', 'employee_id', compute='_onchange_period_attendance',
-                                   readonly=True, string='Leaves')
+    leave_ids_payroll = fields.Many2many('hr.work.entry', readonly=True, compute='_onchange_period_attendance')
 
     @api.depends('date_from', 'date_to')
     def _onchange_period_attendance(self):
         for rec in self:
             rec.attendance_ids = self.env['hr.attendance'].search([('check_in', '>=', rec.date_from), ('check_out', '<=', rec.date_to), ('employee_id' , '=', rec.employee_id.id)])
             rec.overtime_ids = self.env['airo.overtime.request'].search([('date_from', '>=', rec.date_from), ('date_to', '<=', rec.date_to), ('employee_id' , '=', rec.employee_id.id), ('state', '=', 'approved')])
-            rec.payroll_leave_ids = self.env['hr.work.entry'].search(
+            rec.leave_ids_payroll |= self.env['hr.work.entry'].search(
                 [('date_start', '>=', rec.date_from), ('date_stop', '<=', rec.date_to),
                  ('employee_id', '=', rec.employee_id.id),
                  '|',
                  ('work_entry_type_id', '=', 'Sick Time Off'),
                  ('work_entry_type_id', '=', 'Vacation')
                  ])
+
     def _generate_pdf(self):
         mapped_reports = self._get_pdf_reports()
         attachments_vals_list = []
